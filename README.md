@@ -1,5 +1,5 @@
 # Tools and Technologies Used
-API endpoints are defined by Next.js route handles for server side fetching
+API endpoints are defined by Next.js route handlers for server side fetching
 - Frontend: Next.js, typescript, SCSS, Tailwind css and React query
 - Backend: Next.js, Supabase, typescript
   
