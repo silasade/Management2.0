@@ -3,11 +3,10 @@
 - Backend: Next.js, Supabase, typescript
   
 ## To run this project
-```bash
-npm install
-npm run dev
-
-
+  ```bash
+  npm install
+  npm run dev
+```
 
 ### Note
 Application is still in development
