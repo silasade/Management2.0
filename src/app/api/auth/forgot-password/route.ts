@@ -5,14 +5,14 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
-
+    const url = new URL(req.url);
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     const supabase = createRouteHandlerClient({ cookies: () => cookies() });
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+      redirectTo: `${url.origin}/reset-password`,
     });
 
     if (error) {
@@ -21,6 +21,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Password reset email sent" });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Something went wrong" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Something went wrong" },
+      { status: 500 }
+    );
   }
 }
