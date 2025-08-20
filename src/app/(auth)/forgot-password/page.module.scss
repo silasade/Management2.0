@@ -1,0 +1,26 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  .formItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: fit-content;
+    .inputLabel {
+      font-size: 12px;
+      line-height: 19.1px;
+    }
+    :global(input.input) {
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      padding-left: 20px;
+      padding-right: 10px;
+      transition: all 250ms ease-in-out;
+      height: 102px !important;
+      background-color: #fafafa ;
+    }
+  }
+}

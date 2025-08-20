@@ -1,0 +1,22 @@
+@import "index.scss";
+.wrapper {
+  height: 100vh;
+  padding: 0 64px;
+  background-color: $primary-color-400;
+  display: grid;
+  grid-template-columns: 1fr 1fr; // two equal columns
+  grid-template-areas: "auth info";
+  justify-content: space-between;
+  align-items: center;
+
+  .authPage {
+    grid-area: auth;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .info {
+    grid-area: info;
+    max-width: 590px;
+  }
+}

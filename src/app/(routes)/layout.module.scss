@@ -1,0 +1,29 @@
+.wrapper {
+  height: 100vh;
+  display: grid;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar dashboard";
+
+  .sidebar {
+    grid-area: sidebar;
+    width: 20vw;
+    border-right: 1px solid #b3b3b3;
+  }
+  .header {
+    
+    grid-area: header;
+    height: 12vh;
+    width: 80vw;
+    padding: 20px;
+    border-bottom: 1px solid #b3b3b3;
+  }
+  .dashboard {
+    grid-area: dashboard;
+    width: 80vw;
+    height: 88vh;
+
+    padding: 24px;
+    background-color: #f8f8f8;
+  }
+}

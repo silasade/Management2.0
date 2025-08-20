@@ -1,0 +1,44 @@
+.wrapper {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  height: fit-content;
+  .extractBtn {
+    background-color: #74c0db;
+    border-radius: 8px;
+    color: white;
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px;
+    height: fit-content;
+    font-size: 14px;
+    cursor: pointer;
+    &:hover {
+      background-color: darken($color: #74c0db, $amount: 20%);
+      color: lighten($color: white, $amount: 20%);
+    }
+  }
+  .dragBox {
+    border: 2px dashed #1849d6;
+    border-radius: 8px;
+    padding: 12px;
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    .helperText {
+      color: #0b0b0b;
+      font-weight: 400;
+      font-size: 12px;
+    }
+    .divider {
+      color: #6d6d6d;
+      font-weight: 400;
+      font-size: 10px;
+    }
+  }
+}

@@ -1,0 +1,50 @@
+@import "index.scss";
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .head {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .createBtn {
+      background-color: #d4a373;
+      color: white;
+      border-radius: 8px;
+      padding: 8px;
+      height: fit-content;
+    }
+    .name {
+      font-weight: 600;
+      font-size: 36px;
+      color: #d4a373;
+    }
+  }
+  .cardWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    .card {
+      height: 120px;
+      border-radius: 8px;
+      background-color: $primary-color-400;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      width: 100%;
+      color: white;
+      .label {
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+      }
+      .stat {
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+      }
+    }
+  }
+}
