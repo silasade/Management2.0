@@ -17,12 +17,14 @@ import { Input } from "@/components/ui/input";
 import { generateToast } from "../../_global_components/generateToast";
 import { Button } from "@/components/ui/button";
 import GoogleSignInButton from "../../_global_components/GoogleSignIn";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import s from "./page.module.scss";
 import Link from "next/link";
 import { ColorRing } from "react-loader-spinner";
 import { useUpdatePassword } from "@/lib/actions/user";
+import { useEffect } from "react";
 export default function ResetPage() {
+  const code = useSearchParams().get("code");
   const router = useRouter();
   const { mutate, isPending } = useUpdatePassword();
 
@@ -34,8 +36,30 @@ export default function ResetPage() {
     },
   });
   const resetPassword = (values: z.infer<typeof formSchema>) => {
-    mutate(values.confirmPassword);
+    mutate(values.confirmPassword, {
+      onSuccess: () => {
+        generateToast("success", "Password updated");
+        router.push("/home");
+      },
+      onError: (error) => {
+        generateToast("error", error.message || "Something went wrong.");
+      },
+    });
   };
+  useEffect(() => {
+    if (code) {
+      fetch(`/api/auth/callback?code=${code}`).then(async (res) => {
+        if (!res.ok) {
+          const { error } = await res.json();
+          generateToast("error", error || "Invalid or expired link");
+          router.push("/");
+        }
+      });
+    } else {
+      generateToast("error", "Click the confirmation link in your email");
+      router.push("/");
+    }
+  }, [code]);
 
   return (
     <div className="flex flex-col gap-[36px]">
@@ -77,11 +101,10 @@ export default function ResetPage() {
                     {...field}
                     className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[55px] bg-[#fafafa] text-[#e0b88f]!"
                   />
-                  
                 </FormControl>
                 <FormMessage className="text-red font-[300] text-[12px]">
-                    {form.formState.errors.confirmPassword?.message}
-                  </FormMessage>
+                  {form.formState.errors.confirmPassword?.message}
+                </FormMessage>
               </FormItem>
             )}
           />

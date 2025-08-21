@@ -18,6 +18,7 @@ export async function PUT(req: Request) {
     if (error)
       return NextResponse.json({ error: error.message }, { status: 400 });
 
+    await supabase.auth.signOut();
     return NextResponse.json({ message: "Password updated successfully" });
   } catch (err: any) {
     return NextResponse.json(

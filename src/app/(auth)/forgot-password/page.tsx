@@ -30,11 +30,7 @@ export default function ForgotPasswordPage() {
     },
   });
   const resetPassword = (values: z.infer<typeof formSchema>) => {
-    mutate(values.email, {
-      onSuccess: () => {
-        router.push("/reset-password");
-      },
-    });
+    mutate(values.email);
   };
 
   return (
