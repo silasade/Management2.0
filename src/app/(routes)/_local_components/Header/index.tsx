@@ -6,8 +6,8 @@ import { supabase } from "@/lib/supabase";
 import { useGetUserDetails } from "@/lib/actions/user";
 
 function Header() {
-    const { data, isLoading } = useGetUserDetails();
-  
+  const { data, isLoading } = useGetUserDetails();
+
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -20,7 +20,9 @@ function Header() {
         <AvatarIcon className={s.icon} />
         <span className={s.profileDetails}>
           <h5 className={s.name}>
-            {data?.firstName+" "+data?.lastName}
+            {user?.user_metadata?.given_name +
+              " " +
+              user.user_metadata?.family_name}
           </h5>
           <p className={s.email}>{data?.email}</p>
         </span>

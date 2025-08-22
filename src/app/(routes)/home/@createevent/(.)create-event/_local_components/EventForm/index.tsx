@@ -104,7 +104,6 @@ function EventForm({
           private: { eventType: values.eventType },
         },
       };
-
       await fetch(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
