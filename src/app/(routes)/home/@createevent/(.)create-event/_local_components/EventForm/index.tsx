@@ -24,6 +24,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { generateToast } from "@/app/_global_components/generateToast";
 import { ColorRing } from "react-loader-spinner";
+import { error } from "console";
 
 type PropType = z.infer<typeof EventSchema>;
 function formatDate(date: Date | undefined) {
@@ -104,17 +105,25 @@ function EventForm({
           private: { eventType: values.eventType },
         },
       };
-      await fetch(
+
+      const res = await fetch(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${data?.provider_token}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(event),
         }
       );
-      generateToast("success", "Calendar event created");
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Google Calendar API error: ${errText}`);
+      }
+
+      generateToast("success", "Calendar event created ✅");
     } catch (error) {
       console.error(error);
       generateToast(
@@ -125,6 +134,7 @@ function EventForm({
       setSubmitting(false);
     }
   }
+
   return (
     <div>
       <Form {...form}>
@@ -412,7 +422,10 @@ function EventForm({
               )}
             />
           </div>
-          <Button type="submit" className="flex flex-row gap-[2px] items-center justify-center">
+          <Button
+            type="submit"
+            className="flex flex-row gap-[2px] items-center justify-center"
+          >
             {submitting && (
               <ColorRing
                 visible={true}

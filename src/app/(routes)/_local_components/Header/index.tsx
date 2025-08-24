@@ -20,9 +20,9 @@ function Header() {
         <AvatarIcon className={s.icon} />
         <span className={s.profileDetails}>
           <h5 className={s.name}>
-            {user?.user_metadata?.given_name +
+            {(user?.user_metadata?.firstName || "") +
               " " +
-              user.user_metadata?.family_name}
+              (user?.user_metadata?.lastName || "")}
           </h5>
           <p className={s.email}>{data?.email}</p>
         </span>

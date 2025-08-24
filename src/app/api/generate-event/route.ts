@@ -28,7 +28,9 @@ For "organizer.email":
 - Must be in the format user@domain.com.
 - If not present or invalid, output exactly "NOT FOUND"
 Do not output placeholders like "@", "•@", etc.
-Output **only JSON** matching this schema:
+Return ONLY a valid JSON object. 
+Do not add explanations, code blocks, or text before/after the JSON.
+
 
 {
   "title": "string",
@@ -52,8 +54,10 @@ Invitation text: """${extractedText}"""
       schema: EventSchema,
       mode: "json",
     });
+    const raw = JSON.stringify(result.object);
+    const cleaned = cleanJSON(raw);
 
-    const eventObject = EventSchema.parse(result.object);
+    const eventObject = EventSchema.parse(JSON.parse(cleaned));
 
     return new Response(JSON.stringify(eventObject), {
       status: 200,
@@ -68,4 +72,10 @@ Invitation text: """${extractedText}"""
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
+}
+function cleanJSON(raw: string) {
+  return raw
+    .replace(/```json|```/g, "") // remove ```json and ```
+    .replace(/Here is the JSON output[:]?/i, "") // remove intro text
+    .trim();
 }
