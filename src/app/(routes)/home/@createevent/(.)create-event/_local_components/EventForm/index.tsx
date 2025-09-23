@@ -25,6 +25,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { generateToast } from "@/app/_global_components/generateToast";
 import { ColorRing } from "react-loader-spinner";
 import { error } from "console";
+import { useCreateEvent } from "@/lib/actions/event";
 
 type PropType = z.infer<typeof EventSchema>;
 function formatDate(date: Date | undefined) {
@@ -55,6 +56,7 @@ function EventForm({
 }: PropType) {
   const { data, isLoading } = useGetUserDetails();
   const [open, setOpen] = React.useState(false);
+  const { mutate } = useCreateEvent();
   const [date, setDate] = React.useState<Date | undefined>(
     new Date("2025-06-01")
   );
@@ -79,7 +81,6 @@ function EventForm({
     name: "reminders",
   });
   async function createCalendarEvent(values: z.infer<typeof formSchema>) {
-    console.log("Creating event");
     setSubmitting(true);
     try {
       const startISO = new Date(values.startDateTime).toISOString();
@@ -122,8 +123,30 @@ function EventForm({
         const errText = await res.text();
         throw new Error(`Google Calendar API error: ${errText}`);
       }
+      const googleEvent = await res.json();
 
-      generateToast("success", "Calendar event created ✅");
+      mutate(
+        {
+          title: values.title,
+          description: values?.description! || "",
+          endDateTime: values.endDateTime,
+          eventType: values.eventType! || "",
+          location: values.location!,
+          organizerEmail: values.organizer?.email! || "",
+          organizerName: values.organizer?.name || "",
+          organizerPhone: values.organizer?.phone! || "",
+          startDateTime: values.startDateTime,
+          googleEventId: googleEvent.id,
+        },
+        {
+          onSuccess: () => {
+            generateToast("success", "Calendar event created");
+          },
+          onError: (error) => {
+            generateToast("error", error.message);
+          },
+        }
+      );
     } catch (error) {
       console.error(error);
       generateToast(

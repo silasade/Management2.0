@@ -1,4 +1,3 @@
-import { generateToast } from "@/app/_global_components/generateToast";
 
 const getData = async <T>(path: string): Promise<T> => {
   try {
@@ -7,14 +6,12 @@ const getData = async <T>(path: string): Promise<T> => {
     const response = await fetch(`${path}`, { headers });
     if (!response.ok) {
       const {error} = await response.json();
-      generateToast("error", error);
       throw new Error(error);
     }
     const result = (await response.json()) as T;
     return result;
   } catch (error) {
     console.error("getData Error:", error);
-    generateToast("error", (error as Error).message);
     throw error;
   }
 };
@@ -38,16 +35,13 @@ const createData = async <T>(
 
     if (!response.ok) {
       const {error} = await response.json();
-      generateToast("error", error);
       throw new Error(error);
     }
 
     const result = (await response.json()) as T;
-    generateToast("success", "Data created successfully");
     return result;
   } catch (error) {
     console.error("createData Error:", error);
-    generateToast("error", (error as Error).message);
     throw error;
   }
 };
@@ -63,16 +57,13 @@ const deleteData = async <T>(path: string): Promise<T> => {
 
     if (!response.ok) {
      const {error} = await response.json();
-      generateToast("error", error);
       throw new Error(error);
     }
 
     const result = (await response.json()) as T;
-    generateToast("success", "Data deleted successfully");
     return result;
   } catch (error) {
     console.error("deleteData Error:", error);
-    generateToast("error", (error as Error).message);
     throw error;
   }
 };
@@ -96,16 +87,13 @@ const updateData = async <T>(
 
     if (!response.ok) {
       const errData = await response.json();
-      generateToast("error", errData.error || "Something went wrong");
       throw new Error(errData.error || "Failed to update data");
     }
 
     const result = (await response.json()) as T;
-    generateToast("success", "Data updated successfully");
     return result;
   } catch (error) {
     console.error("updateData Error:", error);
-    generateToast("error", (error as Error).message);
     throw error;
   }
 };
