@@ -13,7 +13,12 @@ const useGetUserDetails = () => {
     queryFn: () => getData<UserType>("/api/user/me"),
   });
 };
-
+const useGetUserGoogleSignin = () => {
+  return useQuery({
+    queryKey: ["getUser"],
+    queryFn: () => getData<UserType>("/api/user/me"),
+  });
+};
 const useForgotPassword = () => {
   return useMutation({
     mutationFn: async (email: string) => {

@@ -14,10 +14,10 @@ export const formSchema = z.object({
   organizer: z
     .object({
       name: z.string(),
-      email: z.string().email(),
+      email: z.string().email().optional(),
       phone: z.string().optional(),
     })
     .optional(),
   eventType: z.string().optional(),
-  reminders: z.array(reminderSchema).optional(), 
+  reminders: z.array(reminderSchema).optional(),
 });

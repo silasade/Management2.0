@@ -1,15 +1,13 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { EventSchema } from "./EventSchema";
-interface RouteParams {
-  params: { id: string };
-}
-export async function PUT(req: Request, { params }: RouteParams) {
+import { EventSchema } from "./[id]/EventSchema";
+
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const body = await req.json();
     const parsed = EventSchema.safeParse(body);
-    const { id } = params;
+    const id = (await params).id
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Validation failed", errors: parsed.error.flatten() },

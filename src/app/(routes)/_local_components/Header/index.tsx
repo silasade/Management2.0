@@ -4,27 +4,32 @@ import s from "./Header.module.scss";
 import { AvatarIcon } from "@/app/_global_components/icons";
 import { supabase } from "@/lib/supabase";
 import { useGetUserDetails } from "@/lib/actions/user";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function Header() {
   const { data, isLoading } = useGetUserDetails();
 
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-  }, []);
-
   return (
     <div className={s.wrapper}>
       <div className={s.profileInfo}>
-        <AvatarIcon className={s.icon} />
+        {isLoading ? (
+          <Skeleton className="w-[40px] h-[40px] rounded-[100%]  bg-gray-300 animate-pulse" />
+        ) : (
+          <AvatarIcon className={s.icon} />
+        )}
         <span className={s.profileDetails}>
-          <h5 className={s.name}>
-            {(user?.user_metadata?.firstName || "") +
-              " " +
-              (user?.user_metadata?.lastName || "")}
-          </h5>
-          <p className={s.email}>{data?.email}</p>
+          {isLoading ? (
+            <Skeleton className="w-[70px] h-[10px]   bg-gray-300 animate-pulse" />
+          ) : (
+            <h5 className={s.name}>
+              {(data?.firstName || "") + " " + (data?.lastName || "")}
+            </h5>
+          )}
+          {isLoading ? (
+            <Skeleton className="w-[80px] h-[10px]   bg-gray-300 animate-pulse" />
+          ) : (
+            <p className={s.email}>{data?.email}</p>
+          )}
         </span>
       </div>
     </div>

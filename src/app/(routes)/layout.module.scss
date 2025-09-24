@@ -1,17 +1,23 @@
 .wrapper {
+  overflow-x: hidden;
   height: 100vh;
   display: grid;
   grid-template-areas:
     "sidebar header"
     "sidebar dashboard";
+  width: 100%;
+  background-color: #f8f8f8;
+  grid-template-columns: 20vw minmax(0px, auto);
 
+  position: relative;
   .sidebar {
     grid-area: sidebar;
     width: 20vw;
+    position: fixed;
+    left: 0;
     border-right: 1px solid #b3b3b3;
   }
   .header {
-    
     grid-area: header;
     height: 12vh;
     width: 80vw;
@@ -21,9 +27,7 @@
   .dashboard {
     grid-area: dashboard;
     width: 80vw;
-    height: 88vh;
-
-    padding: 24px;
+    padding: 48px 32px 48px 32px;
     background-color: #f8f8f8;
   }
 }

@@ -17,7 +17,7 @@
     }
     .name {
       font-weight: 600;
-      font-size: 36px;
+      font-size: 24px;
       color: #d4a373;
     }
   }
@@ -45,6 +45,17 @@
         font-weight: 700;
         color: white;
       }
+    }
+  }
+  .tableWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    .tableTitle {
+      font-size:18px;
+      font-weight: 500;
+      line-height: 150%;
+      color: $primary-color-300;
     }
   }
 }

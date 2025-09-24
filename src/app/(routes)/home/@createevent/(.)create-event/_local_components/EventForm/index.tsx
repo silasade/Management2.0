@@ -85,7 +85,10 @@ function EventForm({
     try {
       const startISO = new Date(values.startDateTime).toISOString();
       const endISO = new Date(values.endDateTime).toISOString();
-
+      if (data?.provider_token) {
+        generateToast("error", "Token expired, please sign in again");
+        return;
+      }
       const event = {
         summary: values.title,
         description: values.description,

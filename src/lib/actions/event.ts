@@ -1,11 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createData, deleteData, getData, updateData } from "../requests";
-import { EventStatType, EventType } from "../types";
+import { EventFilter, EventStatType, EventType } from "../types";
 
-const useGetAllEvents = () => {
-  return useQuery<EventType[]>({
-    queryKey: ["getAllEvents"],
-    queryFn: () => getData<EventType[]>("/api/get-events"),
+const useGetAllEvents = (filter: EventFilter) => {
+  return useQuery({
+    queryKey: ["getAllEvents", filter], // include filter in key so cache is unique
+    queryFn: async () => {
+      const searchParams = new URLSearchParams();
+
+      if (filter.eventClass && filter.eventClass !== "all") {
+        searchParams.append("class", filter.eventClass);
+      }
+      if (filter.page) searchParams.append("page", String(filter.page));
+      if (filter.limit) searchParams.append("limit", String(filter.limit));
+      if (filter.search) searchParams.append("search", filter.search);
+
+      return getData<EventType>(`/api/get-events?${searchParams}`);
+    },
   });
 };
 const useGetEventStatistics = () => {
@@ -16,17 +27,19 @@ const useGetEventStatistics = () => {
 };
 const useDeleteEvent = () => {
   const query = useQueryClient();
-  useMutation({
+  return useMutation({
     mutationFn: async (id: string) => {
       return deleteData(`/api/${id}/delete-event`);
     },
-    onSuccess: () =>
-      query.invalidateQueries({ queryKey: ["getAllEvents", "getEventsStats"] }),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["getAllEvents"] });
+      query.invalidateQueries({ queryKey: ["getEventsStats"] });
+    },
   });
 };
 const useUpdateEvent = () => {
   const query = useQueryClient();
-  useMutation({
+  return useMutation({
     mutationFn: async (data: { id: string; body: EventType }) => {
       return updateData(
         `/api/${data.id}/update-event`,
@@ -35,12 +48,13 @@ const useUpdateEvent = () => {
         "PUT"
       );
     },
-    onSuccess: () =>
-      query.invalidateQueries({ queryKey: ["getAllEvents", "getEventsStats"] }),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["getAllEvents"] });
+      query.invalidateQueries({ queryKey: ["getEventsStats"] });
+    },
   });
 };
 type CreateEventType = {
-  
   title: string;
   description: string;
   location: string;
@@ -50,7 +64,7 @@ type CreateEventType = {
   organizerEmail: string;
   organizerPhone: string;
   eventType: string;
-   googleEventId:string
+  googleEventId: string;
 };
 const useCreateEvent = () => {
   const query = useQueryClient();
