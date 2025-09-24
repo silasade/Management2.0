@@ -19,6 +19,17 @@ const useGetAllEvents = (filter: EventFilter) => {
     },
   });
 };
+const useGetEventById = (eventId: string) => {
+  return useQuery<{data:EventType["data"][0]}>({
+    queryKey: ["getEvent"],
+    queryFn: async () => {
+      return getData<{data:EventType["data"][0]}>(`/api/get-event/${eventId}`);
+    },
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    enabled: !!eventId,
+  });
+};
 const useGetEventStatistics = () => {
   return useQuery<EventStatType>({
     queryKey: ["getEventsStats"],
@@ -119,4 +130,5 @@ export {
   useGetAllEvents,
   useUpdateEvent,
   useGetEventStatistics,
+  useGetEventById,
 };
