@@ -1,0 +1,55 @@
+$breakpoints: (
+  "xs": 0,
+  "sm": 425px,
+  "md": 800px,
+  "lg": 1024px,
+  "xl": 1440px,
+);
+
+// Devices Break Points
+@mixin mobile($point: map-get($breakpoints, "md")) {
+  @media (max-width: $point) {
+    @content;
+  }
+}
+
+@mixin desktop($point: map-get($breakpoints, "md")) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+
+// Clamp Break points
+@mixin clamp-screen($minScreen, $maxScreen) {
+  @media only screen and (max-width: $maxScreen) and (min-width: $minScreen) {
+    @content;
+  }
+}
+
+// Fluid Break points
+@mixin screen-xs($point: map-get($breakpoints, "xs")) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+
+@mixin screen-sm($point: map-get($breakpoints, "sm")) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+@mixin screen-md($point: map-get($breakpoints, "md")) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+@mixin screen-lg($point: map-get($breakpoints, "lg")) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+@mixin screen-xl($point: map-get($breakpoints, "xl")) {
+  @media (min-width: map-get($breakpoints, "xl")) {
+    @content;
+  }
+}

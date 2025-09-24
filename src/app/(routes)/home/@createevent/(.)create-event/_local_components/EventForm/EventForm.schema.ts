@@ -9,8 +9,7 @@ export const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   location: z.string().optional(),
-  startDateTime: z.string().datetime(),
-  endDateTime: z.string().datetime(),
+
   organizer: z
     .object({
       name: z.string(),

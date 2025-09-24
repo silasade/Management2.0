@@ -1,33 +1,38 @@
-.wrapper {
-  overflow-x: hidden;
-  height: 100vh;
-  display: grid;
-  grid-template-areas:
-    "sidebar header"
-    "sidebar dashboard";
-  width: 100%;
-  background-color: #f8f8f8;
-  grid-template-columns: 20vw minmax(0px, auto);
 
-  position: relative;
-  .sidebar {
-    grid-area: sidebar;
-    width: 20vw;
-    position: fixed;
-    left: 0;
-    border-right: 1px solid #b3b3b3;
-  }
-  .header {
-    grid-area: header;
-    height: 12vh;
-    width: 80vw;
-    padding: 20px;
-    border-bottom: 1px solid #b3b3b3;
-  }
-  .dashboard {
-    grid-area: dashboard;
-    width: 80vw;
-    padding: 48px 32px 48px 32px;
-    background-color: #f8f8f8;
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; // full viewport height
+  width: 100%;
+  background-color: #f9fafb; // subtle neutral background
+  font-family: "Inter", sans-serif;
+  overflow: hidden !important;
+}
+
+.header {
+  position: sticky; // keep header visible while scrolling
+  top: 0;
+  z-index: 10;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb; // subtle divider
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  // Responsive tweaks
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 }

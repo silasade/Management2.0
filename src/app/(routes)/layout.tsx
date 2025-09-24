@@ -1,7 +1,8 @@
 import React from "react";
 import s from "./layout.module.scss";
 import Header from "./_local_components/Header";
-import Sidebar from "./_local_components/Sidebar";
+import { Toaster } from "@/components/ui/sonner";
+
 type PropType = {
   children: React.ReactNode;
 };
@@ -11,9 +12,8 @@ function layout({ children }: PropType) {
       <div className={s.header}>
         <Header />
       </div>
-      <aside className={s.sidebar}>
-        <Sidebar />
-      </aside>
+      <Toaster />
+
       <div className={s.dashboard}>{children}</div>
     </div>
   );

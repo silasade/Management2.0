@@ -1,14 +1,45 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import s from "./Header.module.scss";
-import { AvatarIcon } from "@/app/_global_components/icons";
-import { supabase } from "@/lib/supabase";
+import { ArrowDownIcon, AvatarIcon } from "@/app/_global_components/icons";
 import { useGetUserDetails } from "@/lib/actions/user";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import { generateToast } from "@/app/_global_components/generateToast";
 function Header() {
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const { data, isLoading } = useGetUserDetails();
+  const logout = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/auth/sign-out", {
+        method: "POST",
+      });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error ?? "Logout failed");
+      }
+      router.push("/");
+      generateToast("success", "Logout successful!");
+    } catch (error) {
+      generateToast("error", (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className={s.wrapper}>
       <div className={s.profileInfo}>
@@ -31,6 +62,26 @@ function Header() {
             <p className={s.email}>{data?.email}</p>
           )}
         </span>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <ArrowDownIcon width={24} height={24} />
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to log out?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                You will be signed out of your account and will need to log in
+                again to continue using the app.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex flex-row w-full">
+              <AlertDialogCancel className="W-100">Cancel</AlertDialogCancel>
+              <AlertDialogAction className="W-100" onClick={logout}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

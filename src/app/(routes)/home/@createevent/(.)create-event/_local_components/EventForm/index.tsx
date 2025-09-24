@@ -1,5 +1,5 @@
 import { useGetUserDetails } from "@/lib/actions/user";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { formSchema } from "./EventForm.schema";
 import { z } from "zod";
@@ -24,10 +24,15 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { generateToast } from "@/app/_global_components/generateToast";
 import { ColorRing } from "react-loader-spinner";
-import { error } from "console";
 import { useCreateEvent } from "@/lib/actions/event";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
-type PropType = z.infer<typeof EventSchema>;
+const { RangePicker } = DatePicker;
+type PropType = z.infer<typeof EventSchema> & {
+  closeDrawer: () => void;
+  clear: () => void;
+};
 function formatDate(date: Date | undefined) {
   if (!date) {
     return "";
@@ -53,6 +58,8 @@ function EventForm({
   organizer,
   startDateTime,
   title,
+  closeDrawer,
+  clear,
 }: PropType) {
   const { data, isLoading } = useGetUserDetails();
   const [open, setOpen] = React.useState(false);
@@ -60,6 +67,9 @@ function EventForm({
   const [date, setDate] = React.useState<Date | undefined>(
     new Date("2025-06-01")
   );
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [month, setMonth] = React.useState<Date | undefined>(date);
   const [value, setValue] = React.useState(formatDate(date));
@@ -67,12 +77,15 @@ function EventForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: description,
-      endDateTime: endDateTime,
+
       eventType: eventType,
       location: location,
-      organizer: organizer,
+      organizer: {
+        ...organizer,
+        email: organizer.email === "NOT FOUND" ? "" : undefined,
+        phone: organizer.phone === "NOT FOUND" ? "" : organizer.phone,
+      },
       reminders: [{ method: "popup", minutes: 10 }], // default reminder
-      startDateTime: startDateTime,
       title: title,
     },
   });
@@ -82,13 +95,20 @@ function EventForm({
   });
   async function createCalendarEvent(values: z.infer<typeof formSchema>) {
     setSubmitting(true);
+    if (!startDate || !endDate) {
+      generateToast(
+        "error",
+        "Ensure to select a schedule time before submitting"
+      );
+      return;
+    }
     try {
-      const startISO = new Date(values.startDateTime).toISOString();
-      const endISO = new Date(values.endDateTime).toISOString();
-      if (data?.provider_token) {
-        generateToast("error", "Token expired, please sign in again");
-        return;
-      }
+      const startISO = new Date(startDate).toISOString();
+      const endISO = new Date(endDate).toISOString();
+      // if (data?.provider_token) {
+      //   generateToast("error", "Token expired, please sign in again");
+      //   return;
+      // }
       const event = {
         summary: values.title,
         description: values.description,
@@ -132,21 +152,24 @@ function EventForm({
         {
           title: values.title,
           description: values?.description! || "",
-          endDateTime: values.endDateTime,
+          endDateTime: endDate,
           eventType: values.eventType! || "",
           location: values.location!,
           organizerEmail: values.organizer?.email! || "",
           organizerName: values.organizer?.name || "",
           organizerPhone: values.organizer?.phone! || "",
-          startDateTime: values.startDateTime,
+          startDateTime: startDate,
           googleEventId: googleEvent.id,
         },
         {
           onSuccess: () => {
             generateToast("success", "Calendar event created");
+            closeDrawer();
+            clear();
           },
           onError: (error) => {
             generateToast("error", error.message);
+            clear();
           },
         }
       );
@@ -160,7 +183,10 @@ function EventForm({
       setSubmitting(false);
     }
   }
-
+  useEffect(() => {
+    setStartDate(startDateTime);
+    setEndDate(endDateTime);
+  }, []);
   return (
     <div>
       <Form {...form}>
@@ -312,159 +338,55 @@ function EventForm({
               )}
             />
           </div>
-          <div className="flex flex-row gap-4">
-            <FormField
-              control={form.control}
-              name="startDateTime"
-              render={({ field }) => (
-                <FormItem className="w-full flex-col gap-[2px]">
-                  <FormLabel>Start date</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row w-full gap-2">
-                      {/* DATE PICKER */}
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="justify-between">
-                            {field.value
-                              ? new Date(field.value).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    day: "2-digit",
-                                    month: "long",
-                                    year: "numeric",
-                                  }
-                                )
-                              : "Pick a date"}
-                            <CalendarIcon className="ml-2 h-4 w-4" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(date) => {
-                              if (!date) return;
-                              // Preserve existing time if available
-                              const current = field.value
-                                ? new Date(field.value)
-                                : new Date();
-                              date.setHours(
-                                current.getHours(),
-                                current.getMinutes(),
-                                0
-                              );
-                              field.onChange(date.toISOString());
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
 
-                      {/* TIME PICKER */}
-                      <Input
-                        type="time"
-                        defaultValue="10:30"
-                        onChange={(e) => {
-                          const [h, m] = e.target.value.split(":").map(Number);
-                          const base = field.value
-                            ? new Date(field.value)
-                            : new Date();
-                          base.setHours(h, m, 0);
-                          field.onChange(base.toISOString());
-                        }}
-                        className="flex justify-between"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-red-500 font-[500] text-[12px]" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="endDateTime"
-              render={({ field }) => (
-                <FormItem className="flex flex-col w-full gap-2">
-                  <FormLabel>End date</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="justify-between">
-                            {field.value
-                              ? new Date(field.value).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    day: "2-digit",
-                                    month: "long",
-                                    year: "numeric",
-                                  }
-                                )
-                              : "Pick a date"}
-                            <CalendarIcon className="ml-2 h-4 w-4" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(date) => {
-                              if (!date) return;
-                              const current = field.value
-                                ? new Date(field.value)
-                                : new Date();
-                              date.setHours(
-                                current.getHours(),
-                                current.getMinutes(),
-                                0
-                              );
-                              field.onChange(date.toISOString());
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <Input
-                        type="time"
-                        defaultValue="11:30"
-                        onChange={(e) => {
-                          const [h, m] = e.target.value.split(":").map(Number);
-                          const base = field.value
-                            ? new Date(field.value)
-                            : new Date();
-                          base.setHours(h, m, 0);
-                          field.onChange(base.toISOString());
-                        }}
-                        className=""
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-red-500 font-[500] text-[12px]" />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button
-            type="submit"
-            className="flex flex-row gap-[2px] items-center justify-center"
-          >
-            {submitting && (
-              <ColorRing
-                visible={true}
-                height="20"
-                width="20"
-                ariaLabel="color-ring-loading"
-                wrapperStyle={{}}
-                wrapperClass="color-ring-wrapper"
-                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          <div className="flex flex-col w-full gap-2">
+            <FormLabel>Date</FormLabel>
+            <FormControl>
+              <RangePicker
+                defaultValue={[dayjs(startDateTime), dayjs(endDateTime)]}
+                className="w-full"
+                onChange={(_, dateStrings) => {
+                  setStartDate(dateStrings[0]);
+                  setEndDate(dateStrings[1]);
+                }}
+                showTime
+                required
               />
-            )}
-            Submit to calendar
-          </Button>
+            </FormControl>
+            <FormMessage className="text-red-500 font-[500] text-[12px]"></FormMessage>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <Button
+              type="reset"
+              onClick={clear}
+              className="flex bg-[#f9dfc2] hover:text-[#f9dfc2] hover:bg-[#e0b88f] text-[#7a573a] flex-row gap-[2px] items-center justify-center w-100"
+            >
+              Change image
+            </Button>
+            <Button
+              type="submit"
+              className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-100"
+            >
+              {submitting && (
+                <ColorRing
+                  visible={true}
+                  height="20"
+                  width="20"
+                  ariaLabel="color-ring-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="color-ring-wrapper"
+                  colors={[
+                    "#e15b64",
+                    "#f47e60",
+                    "#f8b26a",
+                    "#abbd81",
+                    "#849b87",
+                  ]}
+                />
+              )}
+              Submit to calendar
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

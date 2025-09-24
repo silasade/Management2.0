@@ -21,6 +21,7 @@ function CreateEvent() {
   const {
     isLoading: generatingEvent,
     object,
+    clear,
     submit: createEvent,
   } = useObject({
     api: "/api/generate-event",
@@ -165,6 +166,11 @@ function CreateEvent() {
           </div>
         ) : object ? (
           <EventForm
+            clear={() => {
+              clear();
+              setUploadedImage(undefined);
+            }}
+            closeDrawer={handleOpenChange}
             description={object?.description || ""}
             endDateTime={object?.endDateTime || ""}
             eventType={object?.eventType || ""}

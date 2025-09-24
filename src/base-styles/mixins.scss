@@ -1,0 +1,51 @@
+// Mixin for table row status
+@mixin statusMixin($status) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // Apply specific styles based on the status
+  @if $status == "successful" {
+    width: 74px;
+    background-color: lighten(#19d84e, 48%); // light green background
+    color: #19d84e; // dark green text color
+  } @else if $status == "pending" {
+    width: 59px;
+    height: 22px;
+    background-color: lighten(#db962e, 40%); // light orange background
+    color: #db962e; // orange text color
+  } @else if $status == "failed" {
+    width: 48px;
+    background-color: lighten(#dc4e44, 40%); // light red background
+    color: #dc4e44; // red text color
+  } @else if $status == "sent" {
+    width: 44px;
+    background-color: lighten(#19d84e, 48%); // light green background
+    color: #19d84e; // dark green text color
+  }
+}
+
+// Style the status column
+.statusCell {
+  padding: 0.5px 8px;
+  border-radius: 8px;
+  text-align: center !important;
+  font-size: 12px;
+  font-weight: 500;
+  height: 22px !important;
+text-transform: capitalize;
+  &.successful {
+    @include statusMixin("successful");
+  }
+
+  &.pending {
+    @include statusMixin("pending");
+  }
+
+  &.failed {
+    @include statusMixin("failed");
+  }
+  &.sent {
+    @include statusMixin("sent");
+  }
+}

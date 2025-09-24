@@ -25,15 +25,44 @@ const useGetEventStatistics = () => {
     queryFn: () => getData<EventStatType>("/api/event-stat"),
   });
 };
+interface DeleteEventBody {
+  id: string;
+  googleEventId?: string;
+  token: string;
+}
 const useDeleteEvent = () => {
-  const query = useQueryClient();
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (id: string) => {
-      return deleteData(`/api/${id}/delete-event`);
+    mutationFn: async (body: DeleteEventBody) => {
+      // If you want to delete from Google Calendar
+      if (body.googleEventId) {
+        const res = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events/${body.googleEventId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${body.token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to delete Google Calendar event");
+        }
+      }
+
+      // Delete from your own backend
+      const data = await deleteData(`/api/delete-event/${body.id}`);
+      return data;
     },
     onSuccess: () => {
-      query.invalidateQueries({ queryKey: ["getAllEvents"] });
-      query.invalidateQueries({ queryKey: ["getEventsStats"] });
+      queryClient.invalidateQueries({
+        queryKey: ["getAllEvents"],
+        exact: false,
+      });
+      queryClient.invalidateQueries({ queryKey: ["getEventsStats"] });
     },
   });
 };
@@ -49,7 +78,7 @@ const useUpdateEvent = () => {
       );
     },
     onSuccess: () => {
-      query.invalidateQueries({ queryKey: ["getAllEvents"] });
+      query.invalidateQueries({ queryKey: ["getAllEvents"], exact: false });
       query.invalidateQueries({ queryKey: ["getEventsStats"] });
     },
   });
@@ -77,8 +106,11 @@ const useCreateEvent = () => {
         body
       );
     },
-    onSuccess: () =>
-      query.invalidateQueries({ queryKey: ["getAllEvents", "getEventsStats"] }),
+    onSuccess: () => {
+      query.invalidateQueries({ queryKey: ["getAllEvents"], exact: false });
+
+      query.invalidateQueries({ queryKey: ["getEventsStats"] });
+    },
   });
 };
 export {

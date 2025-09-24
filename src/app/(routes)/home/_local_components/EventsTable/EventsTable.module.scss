@@ -1,4 +1,38 @@
 @import "index.scss";
-.wrapper{
-    
+.popOverContentBody {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.popOverContentWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  .item {
+    padding: 8px 16px 8px 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+      background-color: #f4f4f6;
+    }
+    .text {
+      color: #19171a;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 150%;
+    }
+    .icon {
+      width: 18px;
+      height: 18px;
+      color: #240806;
+    }
+  }
+  .item:not(:last-child) {
+    border-bottom: 0.5px solid #e6e4e7;
+  }
+}
+.wrapper {
 }
