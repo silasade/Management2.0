@@ -48,19 +48,23 @@ function EventsTable({ eventsData, isLoading }: PropType) {
   const { mutate, isPending } = useDeleteEvent();
 
   const handleDeleteEvent = (googleEventId: string, eventId: string) => {
-    // if (!userData?.provider_token) {
-    //   router.push("/");
-    //   generateToast("error", "Login again to refresh token");
-    //   return
-    // }
+    if (!userData?.provider_token) {
+      generateToast("error", "User token missing. Try logging in again.");
+      return;
+    }
+
     mutate(
       { id: eventId, googleEventId, token: userData?.provider_token! },
       {
         onSuccess: () => {
           generateToast("success", "Event deleted");
         },
-        onError: (error) => {
-          generateToast("error", error.message || "Failed to delete event");
+        onError: (error: any) => {
+          const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to delete event";
+          generateToast("error", message);
         },
       }
     );
