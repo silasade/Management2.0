@@ -40,7 +40,7 @@ const useGetEventById = (eventId: string) => {
       );
     },
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     enabled: !!eventId,
   });
 };

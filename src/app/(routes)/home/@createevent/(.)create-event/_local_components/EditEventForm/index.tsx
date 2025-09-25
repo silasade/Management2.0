@@ -21,6 +21,7 @@ import { ColorRing, Puff } from "react-loader-spinner";
 import { useGetEventById, useUpdateEvent } from "@/lib/actions/event";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
+import { supabase } from "@/lib/supabase";
 
 const { RangePicker } = DatePicker;
 type PropType = {
@@ -29,9 +30,8 @@ type PropType = {
   id: string;
 };
 function EditEventForm({ closeDrawer, clear, id }: PropType) {
-  const { data, isLoading } = useGetUserDetails();
   const { data: eventData, isFetching, refetch } = useGetEventById(id);
-  const { mutate } = useUpdateEvent();
+  const { mutate, isPending } = useUpdateEvent();
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -75,10 +75,10 @@ function EditEventForm({ closeDrawer, clear, id }: PropType) {
     try {
       const startISO = new Date(startDate).toISOString();
       const endISO = new Date(endDate).toISOString();
-      // if (data?.provider_token) {
-      //   generateToast("error", "Token expired, please sign in again");
-      //   return;
-      // }
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
       const event = {
         summary: values.title,
         description: values.description,
@@ -105,7 +105,7 @@ function EditEventForm({ closeDrawer, clear, id }: PropType) {
         {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${data?.provider_token}`,
+            Authorization: `Bearer ${session?.provider_token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(event),
@@ -382,7 +382,7 @@ function EditEventForm({ closeDrawer, clear, id }: PropType) {
             type="submit"
             className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-full"
           >
-            {submitting && (
+            {(submitting||isPending) && (
               <ColorRing
                 visible={true}
                 height="20"

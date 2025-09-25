@@ -27,6 +27,7 @@ import { ColorRing } from "react-loader-spinner";
 import { useCreateEvent } from "@/lib/actions/event";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
+import { supabase } from "@/lib/supabase";
 
 const { RangePicker } = DatePicker;
 type PropType = z.infer<typeof EventSchema> & {
@@ -61,9 +62,7 @@ function EventForm({
   closeDrawer,
   clear,
 }: PropType) {
-  const { data, isLoading } = useGetUserDetails();
-  const [open, setOpen] = React.useState(false);
-  const { mutate } = useCreateEvent();
+  const { mutate, isPending } = useCreateEvent();
   const [date, setDate] = React.useState<Date | undefined>(
     new Date("2025-06-01")
   );
@@ -71,8 +70,7 @@ function EventForm({
   const [endDate, setEndDate] = useState<string>("");
 
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -105,10 +103,14 @@ function EventForm({
     try {
       const startISO = new Date(startDate).toISOString();
       const endISO = new Date(endDate).toISOString();
-      // if (data?.provider_token) {
-      //   generateToast("error", "Token expired, please sign in again");
-      //   return;
-      // }
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error || !session?.provider_token) {
+        generateToast("error", "User token missing. Try logging in again.");
+        return;
+      }
       const event = {
         summary: values.title,
         description: values.description,
@@ -135,7 +137,7 @@ function EventForm({
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${data?.provider_token}`,
+            Authorization: `Bearer ${session?.provider_token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(event),
@@ -368,7 +370,7 @@ function EventForm({
               type="submit"
               className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-[50%]"
             >
-              {submitting && (
+              {(submitting || isPending) && (
                 <ColorRing
                   visible={true}
                   height="20"

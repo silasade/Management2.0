@@ -26,8 +26,8 @@ import { EyeIcon } from "lucide-react";
 import { useDeleteEvent } from "@/lib/actions/event";
 import { generateToast } from "@/app/_global_components/generateToast";
 import { Oval } from "react-loader-spinner";
-import { useGetUserDetails } from "@/lib/actions/user";
-import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+
 import ReusableTable from "@/app/_global_components/Table/Table";
 import Link from "next/link";
 export type EventTableType = {
@@ -44,17 +44,20 @@ export type EventTableType = {
 };
 type PropType = { eventsData: EventType["data"]; isLoading: boolean };
 function EventsTable({ eventsData, isLoading }: PropType) {
-  const { data: userData } = useGetUserDetails();
   const { mutate, isPending } = useDeleteEvent();
 
-  const handleDeleteEvent = (googleEventId: string, eventId: string) => {
-    if (!userData?.provider_token) {
+  const handleDeleteEvent = async (googleEventId: string, eventId: string) => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+    console.log(session?.provider_token!);
+    if (error || !session?.provider_token) {
       generateToast("error", "User token missing. Try logging in again.");
       return;
     }
-
     mutate(
-      { id: eventId, googleEventId, token: userData?.provider_token! },
+      { id: eventId, googleEventId, token: session?.provider_token! },
       {
         onSuccess: () => {
           generateToast("success", "Event deleted");
