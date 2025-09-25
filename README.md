@@ -26,7 +26,7 @@ API endpoints are defined by Next.js route handlers for server side fetching
 
 ## Query functions
 
-react-query is used to handle API communications and they are found in the /src/lib/actions folder
+react-query from tanstack is used to handle API communications and they are found in the /src/lib/actions folder
 
 - Each file in the folder represents a particular object for the backend e.g. the events file in the folder corresponds to the /api/event-related-tasks and the react query hooks are used for anything related to the name of the file.
 - The naming convention of the react-query hooks depends on the action (get, create, delete, update) to perform e.g for a get action useGet...
