@@ -7,6 +7,8 @@ API endpoints are defined by Next.js route handlers for server side fetching
 - Frontend: Next.js, typescript, SCSS, Tailwind css and React query
 - Backend: Next.js, Supabase, typescript
 - Database PostGreSql
+- CSS components libary: Ant design and Shadcn
+- Testing: Vitest
   
 ## To run this project
   ```bash
