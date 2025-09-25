@@ -12,81 +12,51 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EventSchema } from "@/app/api/generate-event/schema";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+
 import { generateToast } from "@/app/_global_components/generateToast";
-import { ColorRing } from "react-loader-spinner";
-import { useCreateEvent } from "@/lib/actions/event";
+import { ColorRing, Puff } from "react-loader-spinner";
+import { useGetEventById, useUpdateEvent } from "@/lib/actions/event";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
-type PropType = z.infer<typeof EventSchema> & {
+type PropType = {
   closeDrawer: () => void;
   clear: () => void;
+  id: string;
 };
-function formatDate(date: Date | undefined) {
-  if (!date) {
-    return "";
-  }
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false;
-  }
-  return !isNaN(date.getTime());
-}
-
-function EventForm({
-  description,
-  endDateTime,
-  eventType,
-  location,
-  organizer,
-  startDateTime,
-  title,
-  closeDrawer,
-  clear,
-}: PropType) {
+function EditEventForm({ closeDrawer, clear, id }: PropType) {
   const { data, isLoading } = useGetUserDetails();
-  const [open, setOpen] = React.useState(false);
-  const { mutate } = useCreateEvent();
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
-  );
+  const { data: eventData, isFetching, refetch } = useGetEventById(id);
+  const { mutate } = useUpdateEvent();
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: description,
+      description: eventData?.data.description,
 
-      eventType: eventType,
-      location: location,
+      eventType: eventData?.data.eventType,
+      location: eventData?.data.location,
       organizer: {
-        ...organizer,
-        email: organizer.email === "NOT FOUND" ? "" : undefined,
-        phone: organizer.phone === "NOT FOUND" ? "" : organizer.phone,
+        name: eventData?.data.organizerName,
+        email:
+          eventData?.data.organizerEmail === "NOT FOUND"
+            ? undefined
+            : eventData?.data.organizerEmail,
+        phone:
+          eventData?.data.organizerPhone === "NOT FOUND"
+            ? ""
+            : eventData?.data.organizerPhone,
       },
-      reminders: [{ method: "popup", minutes: 10 }], // default reminder
-      title: title,
+      reminders: eventData?.data.reminders ?? [
+        { method: "popup", minutes: 10 },
+      ], // default reminder
+      title: eventData?.data.title,
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -131,9 +101,9 @@ function EventForm({
       };
 
       const res = await fetch(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventData?.data.googleEventId}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${data?.provider_token}`,
             "Content-Type": "application/json",
@@ -150,21 +120,24 @@ function EventForm({
 
       mutate(
         {
-          title: values.title,
-          description: values?.description! || "",
-          endDateTime: endDate,
-          eventType: values.eventType! || "",
-          location: values.location!,
-          organizerEmail: values.organizer?.email! || "",
-          organizerName: values.organizer?.name || "",
-          organizerPhone: values.organizer?.phone! || "",
-          startDateTime: startDate,
-          googleEventId: googleEvent.id,
-          reminders: values.reminders ?? [{ method: "popup", minutes: 10 }],
+          body: {
+            title: values.title,
+            description: values?.description! || "",
+            endDateTime: endDate,
+            eventType: values.eventType! || "",
+            location: values.location!,
+            organizerEmail: values.organizer?.email! || "",
+            organizerName: values.organizer?.name || "",
+            organizerPhone: values.organizer?.phone! || "",
+            startDateTime: startDate,
+            googleEventId: googleEvent.id,
+            reminders: values.reminders ?? [{ method: "popup", minutes: 10 }],
+          },
+          id: id,
         },
         {
           onSuccess: () => {
-            generateToast("success", "Calendar event created");
+            generateToast("success", "Calendar event updated");
             closeDrawer();
             clear();
           },
@@ -185,9 +158,55 @@ function EventForm({
     }
   }
   useEffect(() => {
-    setStartDate(startDateTime);
-    setEndDate(endDateTime);
+    if (eventData?.data.startDateTime)
+      setStartDate(eventData?.data.startDateTime);
+    if (eventData?.data.endDateTime) setEndDate(eventData?.data.endDateTime);
   }, []);
+  useEffect(() => {
+    refetch();
+  }, []);
+  useEffect(() => {
+    if (eventData?.data) {
+      form.reset({
+        title: eventData.data.title,
+        description: eventData.data.description,
+        eventType: eventData.data.eventType,
+        location: eventData.data.location,
+        organizer: {
+          name: eventData.data.organizerName,
+          email:
+            eventData.data.organizerEmail === "NOT FOUND"
+              ? ""
+              : eventData.data.organizerEmail,
+          phone:
+            eventData.data.organizerPhone === "NOT FOUND"
+              ? ""
+              : eventData.data.organizerPhone,
+        },
+        reminders: eventData.data.reminders ?? [
+          { method: "popup", minutes: 10 },
+        ],
+      });
+      setStartDate(eventData.data.startDateTime);
+      setEndDate(eventData.data.endDateTime);
+    }
+  }, [eventData, form]);
+
+  if (isFetching) {
+    return (
+      <div className="flex m-auto justify-center items-center">
+        <Puff
+          visible={true}
+          height="40"
+          width="40"
+          color="#4fa94d"
+          ariaLabel="puff-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
+  }
   return (
     <div className="overflow-y-auto md:overflow-y-none">
       <Form {...form}>
@@ -340,11 +359,14 @@ function EventForm({
             />
           </div>
 
-          <div className="flex flex-col md:flex-row  w-full gap-2">
+          <div className="flex flex-col w-full gap-2">
             <FormLabel>Date</FormLabel>
             <FormControl>
               <RangePicker
-                defaultValue={[dayjs(startDateTime), dayjs(endDateTime)]}
+                defaultValue={[
+                  dayjs(eventData?.data.startDateTime),
+                  dayjs(eventData?.data.endDateTime),
+                ]}
                 className="w-full"
                 onChange={(_, dateStrings) => {
                   setStartDate(dateStrings[0]);
@@ -356,42 +378,27 @@ function EventForm({
             </FormControl>
             <FormMessage className="text-red-500 font-[500] text-[12px]"></FormMessage>
           </div>
-          <div className="flex flex-col md:flex-row gap-2 items-center">
-            <Button
-              type="reset"
-              onClick={clear}
-              className="flex bg-[#f9dfc2] hover:text-[#f9dfc2] hover:bg-[#e0b88f] text-[#7a573a] flex-row gap-[2px] items-center justify-center w-[100%]"
-            >
-              Change image
-            </Button>
-            <Button
-              type="submit"
-              className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-[100%]"
-            >
-              {submitting && (
-                <ColorRing
-                  visible={true}
-                  height="20"
-                  width="20"
-                  ariaLabel="color-ring-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="color-ring-wrapper"
-                  colors={[
-                    "#e15b64",
-                    "#f47e60",
-                    "#f8b26a",
-                    "#abbd81",
-                    "#849b87",
-                  ]}
-                />
-              )}
-              Submit to calendar
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-full"
+          >
+            {submitting && (
+              <ColorRing
+                visible={true}
+                height="20"
+                width="20"
+                ariaLabel="color-ring-loading"
+                wrapperStyle={{}}
+                wrapperClass="color-ring-wrapper"
+                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+              />
+            )}
+            Edit calendar event
+          </Button>
         </form>
       </Form>
     </div>
   );
 }
 
-export default EventForm;
+export default EditEventForm;

@@ -12,6 +12,7 @@ export type EventType = {
     organizerPhone: string;
     eventType: string;
     googleEventId: string;
+    reminders: { method: "popup" | "email"; minutes: number }[];
   }[];
   meta: {
     total: number;

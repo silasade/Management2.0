@@ -3,20 +3,38 @@
   height: 100vh;
   padding: 0 64px;
   background-color: $primary-color-400;
-  display: grid;
-  grid-template-columns: 1fr 1fr; // two equal columns
-  grid-template-areas: "auth info";
-  justify-content: space-between;
-  align-items: center;
-
-  .authPage {
-    grid-area: auth;
-    max-width: 480px;
-    width: 100%;
+  @include mobile {
+    padding: 20px;
   }
+  .mainWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // two equal columns
+    grid-template-areas: "auth info";
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1440px;
+    width: 100%;
+    margin: auto;
+    @include mobile {
+      grid-template-columns: 1fr;
+      grid-template-areas: "auth";
+      max-width: 100%;
+    }
+    .authPage {
+      grid-area: auth;
+      max-width: 480px;
+      width: 100%;
+      @include mobile {
+        max-width: 100%;
+      }
+    }
 
-  .info {
-    grid-area: info;
-    max-width: 590px;
+    .info {
+      grid-area: info;
+      max-width: 590px;
+      @include mobile {
+        display: none;
+      }
+    }
   }
 }

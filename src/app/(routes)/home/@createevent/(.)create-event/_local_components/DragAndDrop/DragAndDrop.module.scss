@@ -1,8 +1,14 @@
+@import "index.scss";
 .wrapper {
   max-width: 500px;
   width: 100%;
   margin: 0 auto;
   height: fit-content;
+  overflow-y: auto;
+  @include mobile{
+    max-width: 100%;
+    padding: 20px;
+  }
   .extractBtn {
     background-color: #74c0db;
     border-radius: 8px;

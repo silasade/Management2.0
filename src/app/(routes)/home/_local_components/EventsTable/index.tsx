@@ -111,17 +111,21 @@ function EventsTable({ eventsData, isLoading }: PropType) {
               }}
               content={
                 <div className={s.popOverContentWrapper}>
-                  <Link href={`/home/view-details?event-id=${record.key}`}>
-                    <div className={s.item}>
-                      <EyeIcon className={s.icon} />{" "}
-                      <span className={s.text}>View Event details</span>
-                    </div>
+                  <Link
+                    className={s.item}
+                    href={`/home/view-details?event-id=${record.key}`}
+                  >
+                    <EyeIcon className={s.icon} />{" "}
+                    <span className={s.text}>View Event details</span>
                   </Link>
 
-                  <div className={s.item}>
+                  <Link
+                    href={`/home/create-event?event-id=${record.key}`}
+                    className={s.item}
+                  >
                     <EditIcon className={s.icon} />
                     <span className={s.text}> Edit Event</span>
-                  </div>
+                  </Link>
                   <div
                     className={s.item}
                     onClick={() => {

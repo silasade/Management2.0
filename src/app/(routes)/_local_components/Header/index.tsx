@@ -68,17 +68,19 @@ function Header() {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>
+              <AlertDialogTitle className="text-sm">
                 Are you sure you want to log out?
               </AlertDialogTitle>
-              <AlertDialogDescription>
-                You will be signed out of your account and will need to log in
-                again to continue using the app.
+              <AlertDialogDescription className="text-xs">
+                  You will be signed out of your account and will need to log in
+                  again to continue using the app.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter className="flex flex-row w-full">
-              <AlertDialogCancel className="W-100">Cancel</AlertDialogCancel>
-              <AlertDialogAction className="W-100" onClick={logout}>Continue</AlertDialogAction>
+            <AlertDialogFooter className="flex flex-row justify-center w-full">
+              <AlertDialogCancel className="W-full">Cancel</AlertDialogCancel>
+              <AlertDialogAction className="W-full" onClick={logout}>
+                Continue
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

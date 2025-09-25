@@ -14,10 +14,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         { status: 422 }
       );
     }
-
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-
     const { data, error } = await supabase
       .from("Events")
       .update([parsed.data])

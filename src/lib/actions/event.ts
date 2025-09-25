@@ -1,7 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createData, deleteData, getData, updateData } from "../requests";
 import { EventFilter, EventStatType, EventType } from "../types";
-
+type CreateEventType = {
+  title: string;
+  description: string;
+  location: string;
+  startDateTime: string;
+  endDateTime: string;
+  organizerName: string;
+  organizerEmail: string;
+  organizerPhone: string;
+  eventType: string;
+  googleEventId: string;
+  reminders: { method: "popup" | "email"; minutes: number }[];
+};
 const useGetAllEvents = (filter: EventFilter) => {
   return useQuery({
     queryKey: ["getAllEvents", filter], // include filter in key so cache is unique
@@ -20,10 +32,12 @@ const useGetAllEvents = (filter: EventFilter) => {
   });
 };
 const useGetEventById = (eventId: string) => {
-  return useQuery<{data:EventType["data"][0]}>({
+  return useQuery<{ data: EventType["data"][0] }>({
     queryKey: ["getEvent"],
     queryFn: async () => {
-      return getData<{data:EventType["data"][0]}>(`/api/get-event/${eventId}`);
+      return getData<{ data: EventType["data"][0] }>(
+        `/api/get-event/${eventId}`
+      );
     },
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -80,13 +94,14 @@ const useDeleteEvent = () => {
 const useUpdateEvent = () => {
   const query = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { id: string; body: EventType }) => {
-      return updateData(
-        `/api/${data.id}/update-event`,
+    mutationFn: async (data: { id: string; body: CreateEventType }) => {
+      const updatedData = await updateData(
+        `/api/update-event/${data.id}`,
         data.body,
         "application/json",
         "PUT"
       );
+      return updatedData;
     },
     onSuccess: () => {
       query.invalidateQueries({ queryKey: ["getAllEvents"], exact: false });
@@ -94,18 +109,7 @@ const useUpdateEvent = () => {
     },
   });
 };
-type CreateEventType = {
-  title: string;
-  description: string;
-  location: string;
-  startDateTime: string;
-  endDateTime: string;
-  organizerName: string;
-  organizerEmail: string;
-  organizerPhone: string;
-  eventType: string;
-  googleEventId: string;
-};
+
 const useCreateEvent = () => {
   const query = useQueryClient();
   return useMutation({

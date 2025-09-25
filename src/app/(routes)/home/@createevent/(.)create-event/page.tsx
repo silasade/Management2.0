@@ -6,7 +6,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import DragAndDrop from "./_local_components/DragAndDrop";
 import { generateToast } from "@/app/_global_components/generateToast";
@@ -15,9 +15,10 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { EventSchema } from "@/app/api/generate-event/schema";
 import { Progress } from "@/components/ui/progress";
 import EventForm from "./_local_components/EventForm";
+import EditEventForm from "./_local_components/EditEventForm";
 function CreateEvent() {
   const [progressValue, setProgressValue] = useState(0);
-
+  const eventId = useSearchParams().get("event-id");
   const {
     isLoading: generatingEvent,
     object,
@@ -157,8 +158,14 @@ function CreateEvent() {
             Start by uploading your event invitation image
           </DrawerDescription>
         </DrawerHeader>
-        {ocrStatus || generatingEvent ? (
-          <div className="flex flex-col gap-[12px] max-w-[500px] w-full m-auto">
+        {eventId ? (
+          <EditEventForm
+            id={eventId}
+            clear={clear}
+            closeDrawer={handleOpenChange}
+          />
+        ) : ocrStatus || generatingEvent ? (
+          <div className="flex flex-col gap-[12px] max-w-[100%] md:max-w-[500px] w-full m-auto">
             <Progress color="#7a573a" value={progressValue} />
             <p className="font-[500] text-[12px] text-[#b3b3b3]">
               {ocrStatus ? "Extracting text..." : "Generating event..."}

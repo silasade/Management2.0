@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const reminderSchema = z.object({
+  method: z.enum(["email", "popup"]),
+  minutes: z.number().min(1),
+});
+
 export const EventSchema = z.object({
   title: z.string(),
   description: z.string(),
@@ -11,4 +16,5 @@ export const EventSchema = z.object({
   organizerPhone: z.string().optional(),
   eventType: z.string().optional(),
   googleEventId: z.string(),
+  reminders: z.array(reminderSchema).optional(),
 });

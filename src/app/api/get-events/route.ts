@@ -14,7 +14,6 @@ export async function GET(req: Request) {
     const now = new Date().toISOString();
     // start building query
     let query = supabase.from("Events").select("*", { count: "exact" });
-    // Apply class filters
     if (eventClass === "upcoming") {
       query = query
         .gt("startDateTime", now)
@@ -28,7 +27,6 @@ export async function GET(req: Request) {
     if (searchByTitle) {
       query = query.ilike("title", `%${searchByTitle}%`);
     }
-
     // Pagination (range is inclusive, so subtract 1 from end index)
     const from = (page - 1) * limit;
     const to = from + limit - 1;
