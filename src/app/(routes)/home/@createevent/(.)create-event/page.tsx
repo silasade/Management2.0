@@ -165,7 +165,7 @@ function CreateEvent() {
             closeDrawer={handleOpenChange}
           />
         ) : ocrStatus || generatingEvent ? (
-          <div className="flex flex-col gap-[12px] max-w-[100%] md:max-w-[500px] w-full m-auto">
+          <div className="flex flex-col gap-[12px] max-w-[100%] p-[20px] md:p-[0px] md:max-w-[500px] w-full m-auto">
             <Progress color="#7a573a" value={progressValue} />
             <p className="font-[500] text-[12px] text-[#b3b3b3]">
               {ocrStatus ? "Extracting text..." : "Generating event..."}
