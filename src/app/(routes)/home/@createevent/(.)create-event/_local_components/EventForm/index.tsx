@@ -82,7 +82,7 @@ function EventForm({
       location: location,
       organizer: {
         ...organizer,
-        email: organizer.email === "NOT FOUND" ? "" : undefined,
+        email: organizer.email === "NOT FOUND" ? "" : organizer.email || "",
         phone: organizer.phone === "NOT FOUND" ? "" : organizer.phone,
       },
       reminders: [{ method: "popup", minutes: 10 }], // default reminder
