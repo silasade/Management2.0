@@ -8,7 +8,17 @@ import {
 } from "@/app/_global_components/icons";
 import dayjs from "dayjs";
 import s from "./EventsTable.module.scss";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { EventType } from "@/lib/types";
 import { Popover, TableColumnsType } from "antd";
 
@@ -36,8 +46,7 @@ type PropType = { eventsData: EventType["data"]; isLoading: boolean };
 function EventsTable({ eventsData, isLoading }: PropType) {
   const { data: userData } = useGetUserDetails();
   const { mutate, isPending } = useDeleteEvent();
-  const router = useRouter();
-  console.log(userData);
+
   const handleDeleteEvent = (googleEventId: string, eventId: string) => {
     // if (!userData?.provider_token) {
     //   router.push("/");
@@ -105,6 +114,7 @@ function EventsTable({ eventsData, isLoading }: PropType) {
           const event = record;
           return (
             <Popover
+              trigger={"hover"}
               placement="left"
               classNames={{
                 body: s.popOverContentBody,
@@ -126,35 +136,59 @@ function EventsTable({ eventsData, isLoading }: PropType) {
                     <EditIcon className={s.icon} />
                     <span className={s.text}> Edit Event</span>
                   </Link>
-                  <div
-                    className={s.item}
-                    onClick={() => {
-                      const now = dayjs();
-                      const eventEnd = dayjs(record.endDateTime);
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <div className={s.item}>
+                        {isPending && (
+                          <Oval
+                            visible={true}
+                            height="20"
+                            width="20"
+                            color="#4fa94d"
+                            ariaLabel="oval-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                          />
+                        )}
+                        <DeleteIcon className={s.icon} />
+                        <span className={s.text}> Delete Event</span>
+                      </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-sm">
+                          Delete this event?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-xs">
+                          This action cannot be undone. The event will be
+                          permanently deleted from your account.{" "}
+                          <strong> Upcoming events cannot be deleted.</strong>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex flex-row justify-center w-full">
+                        <AlertDialogCancel className="W-full">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className="W-full bg-destructive"
+                          onClick={() => {
+                            const now = dayjs();
+                            const eventEnd = dayjs(record.endDateTime);
 
-                      if (eventEnd.isAfter(now)) {
-                        toast("You cannot delete an upcoming event", {
-                          position: "top-left",
-                        });
-                      } else {
-                        handleDeleteEvent(event.googleEventId, event.key);
-                      }
-                    }}
-                  >
-                    {isPending && (
-                      <Oval
-                        visible={true}
-                        height="20"
-                        width="20"
-                        color="#4fa94d"
-                        ariaLabel="oval-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
-                      />
-                    )}
-                    <DeleteIcon className={s.icon} />
-                    <span className={s.text}> Delete Event</span>
-                  </div>
+                            if (eventEnd.isAfter(now)) {
+                              toast("You cannot delete an upcoming event", {
+                                position: "top-left",
+                              });
+                            } else {
+                              handleDeleteEvent(event.googleEventId, event.key);
+                            }
+                          }}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               }
             >
