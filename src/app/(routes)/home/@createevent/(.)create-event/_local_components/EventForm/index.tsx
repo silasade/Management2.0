@@ -340,7 +340,7 @@ function EventForm({
             />
           </div>
 
-          <div className="flex flex-col md:flex-row  w-full gap-2">
+          <div className="flex flex-col  w-full gap-2">
             <FormLabel>Date</FormLabel>
             <FormControl>
               <RangePicker
@@ -360,13 +360,13 @@ function EventForm({
             <Button
               type="reset"
               onClick={clear}
-              className="flex bg-[#f9dfc2] hover:text-[#f9dfc2] hover:bg-[#e0b88f] text-[#7a573a] flex-row gap-[2px] items-center justify-center w-[100%]"
+              className="flex bg-[#f9dfc2] hover:text-[#f9dfc2] hover:bg-[#e0b88f] text-[#7a573a] flex-row gap-[2px] items-center justify-center w-[50%]"
             >
               Change image
             </Button>
             <Button
               type="submit"
-              className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-[100%]"
+              className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-[50%]"
             >
               {submitting && (
                 <ColorRing

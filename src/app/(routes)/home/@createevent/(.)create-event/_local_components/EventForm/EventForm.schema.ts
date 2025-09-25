@@ -13,7 +13,7 @@ export const formSchema = z.object({
   organizer: z
     .object({
       name: z.string(),
-email: z.string().email("Invalid email").optional(),
+      email: z.string().email("Invalid email").or(z.literal("")).optional(),
       phone: z.string().optional(),
     })
     .optional(),
