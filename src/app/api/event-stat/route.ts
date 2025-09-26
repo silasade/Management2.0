@@ -35,7 +35,7 @@ export async function GET() {
     const { count: completedEvents, error: completedError } = await supabase
       .from("Events")
       .select("*", { count: "exact", head: true })
-      .lt("endDateTime", now);
+      .lte("endDateTime", now);
     if (completedError) {
       return NextResponse.json(
         { message: completedError.message },

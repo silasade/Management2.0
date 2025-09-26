@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         .order("startDateTime", { ascending: true });
     } else if (eventClass === "completed") {
       query = query
-        .lt("endDateTime", now)
+        .lte("endDateTime", now)
         .order("endDateTime", { ascending: false });
     }
     // Apply search filter (independent of class filter)
