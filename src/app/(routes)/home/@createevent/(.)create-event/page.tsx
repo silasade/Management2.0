@@ -15,7 +15,7 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { EventSchema } from "@/app/api/generate-event/schema";
 import { Progress } from "@/components/ui/progress";
 import EventForm from "./_local_components/EventForm";
-import EditEventForm from "./_local_components/EditEventForm";
+import EditEventForm from "../../_local_components/EditEventForm";
 function CreateEvent() {
   const [progressValue, setProgressValue] = useState(0);
   const eventId = useSearchParams().get("event-id");
