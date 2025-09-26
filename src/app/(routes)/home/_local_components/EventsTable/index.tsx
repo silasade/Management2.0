@@ -30,6 +30,7 @@ import { supabase } from "@/lib/supabase";
 
 import ReusableTable from "@/app/_global_components/Table/Table";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 export type EventTableType = {
   id: string;
   key: string;
@@ -45,13 +46,12 @@ export type EventTableType = {
 type PropType = { eventsData: EventType["data"]; isLoading: boolean };
 function EventsTable({ eventsData, isLoading }: PropType) {
   const { mutate, isPending } = useDeleteEvent();
-
+  const router = useRouter();
   const handleDeleteEvent = async (googleEventId: string, eventId: string) => {
     const {
       data: { session },
       error,
     } = await supabase.auth.getSession();
-    console.log(session?.provider_token!);
     if (error || !session?.provider_token) {
       generateToast("error", "User token missing. Try logging in again.");
       return;
@@ -128,21 +128,25 @@ function EventsTable({ eventsData, isLoading }: PropType) {
               }}
               content={
                 <div className={s.popOverContentWrapper}>
-                  <Link
+                  <div
                     className={s.item}
-                    href={`/home/view-details?event-id=${record.key}`}
+                    onClick={() =>
+                      router.push(`/home/view-details?event-id=${record.key}`)
+                    }
                   >
                     <EyeIcon className={s.icon} />{" "}
                     <span className={s.text}>View Event details</span>
-                  </Link>
+                  </div>
 
-                  <Link
-                    href={`/home/create-event?event-id=${record.key}`}
+                  <div
+                    onClick={() =>
+                      router.push(`/home/create-event?event-id=${record.key}`)
+                    }
                     className={s.item}
                   >
                     <EditIcon className={s.icon} />
                     <span className={s.text}> Edit Event</span>
-                  </Link>
+                  </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <div className={s.item}>
