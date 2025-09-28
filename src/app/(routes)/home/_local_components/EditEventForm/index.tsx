@@ -374,6 +374,7 @@ function EditEventForm({ closeDrawer, clear, id }: PropType) {
                 }}
                 showTime
                 required
+                format="MMM DD HH:mm"
               />
             </FormControl>
             <FormMessage className="text-red-500 font-[500] text-[12px]"></FormMessage>
@@ -382,7 +383,7 @@ function EditEventForm({ closeDrawer, clear, id }: PropType) {
             type="submit"
             className="flex flex-row gap-[2px] text-[#f9dfc2] bg-[#7a573a] hover:text-[#7a573a] hover:bg-[#8f7862] items-center justify-center w-full"
           >
-            {(submitting||isPending) && (
+            {(submitting || isPending) && (
               <ColorRing
                 visible={true}
                 height="20"

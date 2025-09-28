@@ -354,6 +354,7 @@ function EventForm({
                 }}
                 showTime
                 required
+                format="MMM DD HH:mm"
               />
             </FormControl>
             <FormMessage className="text-red-500 font-[500] text-[12px]"></FormMessage>
