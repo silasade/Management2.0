@@ -11,7 +11,7 @@ function AuthLayout({ children }: PropType) {
         <div className={s.info}>
           <h1></h1>
           <p className="text-[40px] text-[#e0b88f] font-[700] text-right">
-            Smart Event Organizer: AI-Driven Image-to-Calendar Automation
+            Smart Invite: AI-Driven Image-to-Calendar Automation
           </p>
         </div>
       </div>
