@@ -49,7 +49,7 @@ Invitation text: """${extractedText}"""
 `;
 
     const result = await generateObject({
-      model: openrouter("meta-llama/llama-3-70b-instruct"),
+      model: openrouter("mistralai/mistral-7b-instruct:free"),
       prompt,
       schema: EventSchema,
       mode: "json",

@@ -4,7 +4,6 @@ import GoogleSignInButton from "../../_global_components/GoogleSignIn";
 import { useState } from "react";
 
 export default function Home() {
-  const [isPending, setIsPending] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">

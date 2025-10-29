@@ -65,9 +65,9 @@ export default function Home() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(signup)}
-        className="w-full flex flex-col gap-[18px]"
+        className="w-full flex flex-col h-100 gap-[18px]"
       >
-        <div className="w-full flex flex-row gap-4">
+        <div className="w-full flex flex-col md:flex-row gap-4">
           <FormField
             control={form.control}
             name="firstName"
@@ -79,7 +79,7 @@ export default function Home() {
                 <FormControl>
                   <Input
                     {...field}
-                    className="rounded-[8px] border-none! outline-none! pl-[20px] pr-[10px] h-[55px] bg-[#fafafa] text-[20px]! text-[#e0b88f]!"
+                    className="rounded-[8px] border-none! outline-none! pl-[20px] pr-[10px] h-[40px] md:h-[55px] bg-[#fafafa] text-[20px]! text-[#e0b88f]!"
                   />
                 </FormControl>
                 <FormMessage className="text-red font-[300] text-[12px]">
@@ -99,7 +99,7 @@ export default function Home() {
                 <FormControl>
                   <Input
                     {...field}
-                    className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[55px] bg-[#fafafa] text-[#e0b88f]!"
+                    className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[40px] md:h-[55px] bg-[#fafafa] text-[#e0b88f]!"
                   />
                 </FormControl>
                 <FormMessage className="text-red font-[300] text-[12px]">
@@ -120,7 +120,7 @@ export default function Home() {
               <FormControl>
                 <Input
                   {...field}
-                  className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[55px] bg-[#fafafa] text-[#e0b88f]!"
+                  className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[40px] md:h-[55px] bg-[#fafafa] text-[#e0b88f]!"
                 />
               </FormControl>
               <FormMessage className="text-red font-[300] text-[12px]">
@@ -141,7 +141,7 @@ export default function Home() {
                 <AntdInput.Password
                   placeholder="Enter password"
                   {...field}
-                  className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[55px] bg-[#fafafa] text-[#e0b88f]!"
+                  className="rounded-[8px] border-none! outline-none! text-[20px]! pl-[20px] pr-[10px] h-[40px] md:h-[55px] bg-[#fafafa] text-[#e0b88f]!"
                 />
               </FormControl>
               <FormMessage className="text-red font-[300] text-[12px]">
