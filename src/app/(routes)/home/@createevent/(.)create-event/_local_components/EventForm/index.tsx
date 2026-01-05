@@ -349,15 +349,20 @@ function EventForm({
             <FormLabel>Date</FormLabel>
             <FormControl>
               <RangePicker
-                value={[dayjs(startDateTime), dayjs(endDateTime)]}
+                value={
+                  startDate && endDate
+                    ? [dayjs(startDate), dayjs(endDate)]
+                    : null
+                }
                 className="w-full"
-                onChange={(_, dateStrings) => {
-                  setStartDate(dateStrings[0]);
-                  setEndDate(dateStrings[1]);
-                }}
                 showTime
-                required
                 format="MMM DD HH:mm"
+                onChange={(dates) => {
+                  if (!dates) return;
+
+                  setStartDate(dates[0]!.toISOString());
+                  setEndDate(dates[1]!.toISOString());
+                }}
               />
             </FormControl>
             <FormMessage className="text-red-500 font-[500] text-[12px]"></FormMessage>
