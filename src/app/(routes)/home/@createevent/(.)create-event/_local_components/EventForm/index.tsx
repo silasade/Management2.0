@@ -66,8 +66,13 @@ function EventForm({
   const [date, setDate] = React.useState<Date | undefined>(
     new Date("2025-06-01")
   );
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>(
+    startDateTime ? dayjs(startDateTime).toISOString() : ""
+  );
+
+  const [endDate, setEndDate] = useState<string>(
+    endDateTime ? dayjs(endDateTime).toISOString() : ""
+  );
 
   const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -186,12 +191,6 @@ function EventForm({
       setSubmitting(false);
     }
   }
-  useEffect(() => {
-    if (!startDate && !endDate) {
-      setStartDate(startDateTime);
-      setEndDate(endDateTime);
-    }
-  }, [startDateTime, endDateTime]);
 
   return (
     <div className="overflow-y-auto md:overflow-y-none">
