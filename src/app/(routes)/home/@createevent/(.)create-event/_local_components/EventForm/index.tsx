@@ -187,9 +187,12 @@ function EventForm({
     }
   }
   useEffect(() => {
-    setStartDate(startDateTime);
-    setEndDate(endDateTime);
-  }, []);
+    if (!startDate && !endDate) {
+      setStartDate(startDateTime);
+      setEndDate(endDateTime);
+    }
+  }, [startDateTime, endDateTime]);
+
   return (
     <div className="overflow-y-auto md:overflow-y-none">
       <Form {...form}>
@@ -346,11 +349,16 @@ function EventForm({
             <FormLabel>Date</FormLabel>
             <FormControl>
               <RangePicker
-                defaultValue={[dayjs(startDateTime), dayjs(endDateTime)]}
+                value={
+                  startDate && endDate
+                    ? [dayjs(startDate), dayjs(endDate)]
+                    : null
+                }
                 className="w-full"
-                onChange={(_, dateStrings) => {
-                  setStartDate(dateStrings[0]);
-                  setEndDate(dateStrings[1]);
+                onChange={(dates) => {
+                  if (!dates) return;
+                  setStartDate(dates[0]!.toISOString());
+                  setEndDate(dates[1]!.toISOString());
                 }}
                 showTime
                 required
